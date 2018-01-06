@@ -63,6 +63,9 @@ bool KafkaWriter::DoInit(const WriterInfo& info, int num_fields, const threading
         topic_name = info.path;
     }
 
+    // Set stream name for key
+    stream_name = info.path;
+
     // initialize the formatter
     if(BifConst::Kafka::tag_json) {
       formatter = new threading::formatter::TaggedJSON(info.path, this, threading::formatter::JSON::TS_EPOCH);
@@ -177,7 +180,7 @@ bool KafkaWriter::DoWrite(int num_fields, const threading::Field* const* fields,
     const char* raw = (const char*)buff.Bytes();
     RdKafka::ErrorCode resp = producer->produce(
         topic, RdKafka::Topic::PARTITION_UA, RdKafka::Producer::RK_MSG_COPY,
-        const_cast<char*>(raw), strlen(raw), NULL, NULL);
+        const_cast<char*>(raw), strlen(raw), stream_name, strlen(stream_name));
 
     if (RdKafka::ERR_NO_ERROR == resp) {
         producer->poll(0);

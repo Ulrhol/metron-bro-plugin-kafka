@@ -70,6 +70,7 @@ private:
     bool tag_json;
     map<string, string> kafka_conf;
     string topic_name;
+    string stream_name;
     threading::formatter::Formatter *formatter;
     RdKafka::Producer* producer;
     RdKafka::Topic* topic;
