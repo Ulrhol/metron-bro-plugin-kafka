@@ -21,7 +21,7 @@
 #include "KafkaWriter.h"
 #include <plugin/Plugin.h>
 
-namespace plugin { namespace Apache_Kafka {
+namespace plugin { namespace Bro_Kafka {
 
     class Plugin : public ::plugin::Plugin {
     protected:

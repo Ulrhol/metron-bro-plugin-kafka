@@ -73,7 +73,7 @@ bool KafkaWriter::DoInit(const WriterInfo& info, int num_fields, const threading
       formatter = new threading::formatter::JSON(this, threading::formatter::JSON::TS_EPOCH);
     }
 
-    // is debug enabled
+    /* is debug enabled
     string debug;
     debug.assign((const char*)BifConst::Kafka::debug->Bytes(), BifConst::Kafka::debug->Len());
     bool is_debug(!debug.empty());
@@ -83,6 +83,7 @@ bool KafkaWriter::DoInit(const WriterInfo& info, int num_fields, const threading
     else {
       MsgThread::Info(Fmt("Debug is turned off."));
     }
+    */
 
     // kafka global configuration
     string err;
@@ -101,6 +102,7 @@ bool KafkaWriter::DoInit(const WriterInfo& info, int num_fields, const threading
       }
     }
 
+    /*
     if(is_debug) {
         string key("debug");
         string val(debug);
@@ -109,6 +111,7 @@ bool KafkaWriter::DoInit(const WriterInfo& info, int num_fields, const threading
             return false;
         }
     }
+    */
 
     // create kafka producer
     producer = RdKafka::Producer::create(conf, err);
@@ -125,9 +128,11 @@ bool KafkaWriter::DoInit(const WriterInfo& info, int num_fields, const threading
         return false;
     }
 
+    /*
     if(is_debug) {
         MsgThread::Info(Fmt("Successfully created producer."));
     }
+    */
 
     return true;
 }
@@ -178,9 +183,10 @@ bool KafkaWriter::DoWrite(int num_fields, const threading::Field* const* fields,
 
     // send the formatted log entry to kafka
     const char* raw = (const char*)buff.Bytes();
+    const char* sn = stream_name.c_str();
     RdKafka::ErrorCode resp = producer->produce(
         topic, RdKafka::Topic::PARTITION_UA, RdKafka::Producer::RK_MSG_COPY,
-        const_cast<char*>(raw), strlen(raw), stream_name, strlen(stream_name));
+        const_cast<char*>(raw), strlen(raw), sn, strlen(sn), NULL);
 
     if (RdKafka::ERR_NO_ERROR == resp) {
         producer->poll(0);
